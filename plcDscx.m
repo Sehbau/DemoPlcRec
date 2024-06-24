@@ -8,13 +8,13 @@
 % NEXT      plcMtcImg.m
 %
 clear;
-% cd('/DemoPlcRec');                % change to this directory 
+run('../globalsSB');
+cd( PthProg.plcRec );
 
-progDscx    = '..\DescExtr\dscx';
 dirImg      = 'Imgs/';
-dirDsc      = 'Desc\';              % windows backslash
+dirDsc      = 'Desc/';              
 
-addpath('../UtilMb/');
+dirDsc      = u_PathToBackSlash( dirDsc ); % change to window backslash
 
 %% -----  List of Images  -----
 aImg    = dir([dirImg '*.jpg']);
@@ -22,15 +22,16 @@ nImg    = length(aImg);
 
 %% ----------   Descriptor Extraction   ----------
 optS    = '--noBbox --noBon';   % we dont need boundaries & their bboxes
+optS    = ['Params/PrmDesc_Gerust.txt ' optS]; % modify parameters for place rec.
 for i = 1:nImg
     
     imgNam  = aImg(i).name;
     outNam  = aImg(i).name(1:end-4);
     
-    imgf  	= [dirImg imgNam];      % image path
-    outf 	= [dirDsc outNam];      % output file name 
-    cmd   	= [progDscx ' ' imgf ' ' outf ' ' optS];
-    [Sts OutDscx] = dos(cmd);       % excecute program
+    pthImg 	= [dirImg imgNam];      % image path
+    pthOut	= [dirDsc outNam];      % output file name 
+    cmnd   	= [FipaExe.dscx ' ' pthImg ' ' pthOut ' ' optS];
+    [sts OutDscx] = dos(cmnd);       % excecute program
     %OutDscx
     fprintf('.');
     

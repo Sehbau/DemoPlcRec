@@ -1,0 +1,26 @@
+#
+# Parameters for gerust extraction
+# 
+# --- GrstAnf.h
+
+# --- str
+Gst.minSpcStr 0.005
+Gst.fctSpcStr 1.0
+
+Gst.minLesStr 0.1
+Gst.fctLesStr 1.0
+
+# --- arc
+Gst.minSmoArc 0.3
+Gst.fctSmoArc 0.25
+
+Gst.minSpcArc 0.005
+Gst.fctSpcArc 1.0
+
+Gst.minLesArc 0.1
+Gst.fctLesArc 1.0
+
+
+
+
+

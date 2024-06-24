@@ -9,50 +9,47 @@
 % NEXT      plcMtcZon.m
 %
 clear;
+run('../globalsSB');
 
-progFocxv1  = '..\FocExtr\focxv1';
-progFocxh1  = '..\FocExtr\focxh1';
 dirImg      = 'Imgs/';
-dirDsc      = 'Desc\';          % windows backslash
-dirFoc      = 'Focii\';
+dirDsc      = 'Desc/';
+dirFoc      = 'Focii/';
 
-%% -----  Utility Scripts  -----
-addpath('../UtilMb/');
-addpath('../MtchVec/UtilMb/');
-u_AddPathAll('..');
+% change to window backslash
+%dirDsc      = u_PathToBackSlash( dirDsc ); % not necessary I think
+dirFoc      = u_PathToBackSlash( dirFoc ); 
 
 %% -----  List of Images  -----
-aImg        = dir([dirImg '*.jpg']);
+aImg        = dir( [dirImg '*.jpg'] );
 nImg        = length(aImg);
 % obtain image size:
 Irgb        = imread([dirImg aImg(1).name]);
 szI         = size(Irgb);
 
 %% -----  Generate Zones Bboxes  -----
-Zones       = u_ZonesBboxes(szI);
+ZonesAll    = u_ZonesBboxes(szI, 0);
 %SaveBboxL('BboxFocii.txt', SBbox.Vert);
-%Bboxes     = Zones.HorzOla;
-Bboxes      = Zones.HorzSep3;
+ZonesSel    = ZonesAll.Sep3.Vert;
 
 %% ----------   Focus Extraction Per Image  -----------
-nZon    = size(Bboxes,1);
+nZon    = ZonesSel.nZon;
 optS    = '';
 for i = 1:nImg
     imgNam  = aImg(i).name(1:end-4);
     vecf 	= [dirDsc imgNam '.vec']; % vector file name 
     for f = 1:nZon
-        Bbx     = Bboxes(f,:);
+        Bbx     = ZonesSel.Bbox(f,:);
         strBbx  = sprintf('%d %d %d %d', Bbx(1), Bbx(2), Bbx(3), Bbx(4));
         outf    = [dirFoc imgNam '_F' num2str(f)];
         
         % -----  Vectors:
-        cmd   	= [progFocxv1 ' ' vecf ' ' strBbx ' ' outf];
-        [Sts OutFocv] = dos(cmd);      % excecute program
+        cmnd   	= [FipaExe.focxv1 ' ' vecf ' ' strBbx ' ' outf];
+        [Sts OutFocv] = dos(cmnd);     % excecute program
         %OutFocv
 
         % -----  Histograms:
-        cmd   	= [progFocxh1 ' ' vecf ' ' strBbx ' ' outf];
-        [Sts OutFoch] = dos(cmd);      % excecute program
+        cmnd   	= [FipaExe.focxh1 ' ' vecf ' ' strBbx ' ' outf];
+        [Sts OutFoch] = dos(cmnd);     % excecute program
         fprintf('.');
     end
 end

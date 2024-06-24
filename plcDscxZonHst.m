@@ -7,15 +7,15 @@
 % NEXT      plcMtcZonHst.m
 %
 clear;
+run('../globalsSB');
 
-progFocxh   = '..\FocExtr\focxhL';  % without '1'
 dirImg      = 'Imgs/';
-dirDsc      = 'Desc\';              % windows backslash
-dirFoc      = 'Focii\';
+dirDsc      = 'Desc/';             
+dirFoc      = 'Focii/';
 
-addpath('../UtilMb/');
-%addpath('../MtchVec/UtilMb/');
-u_AddPathAll('..');
+% change to window backslash
+%dirDsc      = u_PathToBackSlash( dirDsc ); 
+%dirFoc      = u_PathToBackSlash( dirFoc ); 
 
 %% -----  List of Images  -----
 aImg        = dir([dirImg '*.jpg']);
@@ -25,23 +25,23 @@ Irgb        = imread([dirImg aImg(1).name]);
 szI         = size(Irgb);
 
 %% -----  Generate Zones Bboxes  -----
-Zones       = u_ZonesBboxes(szI);
+ZonesAll    = u_ZonesBboxes(szI, 0);
 %Bboxes     = Zones.HorzOla;
-Bboxes      = Zones.HorzSep3;
+ZonesSel    = ZonesAll.Sep3.Vert;
 
 bbxf        = 'BboxZones.txt';
-SaveBboxL(bbxf, Bboxes);
+SaveBboxL(bbxf, ZonesSel.Bbox );
 
 %% ----------   Focus Extraction Per Image  -----------
-nZon    = size(Bboxes,1);
+nZon    = ZonesSel.nZon;
 optS    = '';
 for i = 1:nImg
     imgNam  = aImg(i).name(1:end-4);
-    vecfV 	= [dirDsc imgNam '.vec']; % vector file name 
-    outfH   = [dirFoc imgNam '_FH'];
+    pthVec 	= [dirDsc imgNam '.vec']; % vector file name 
+    pthHst  = [dirFoc imgNam '_FH'];
      
-    cmd   	= [progFocxh ' ' vecfV ' ' bbxf ' ' outfH];
-    [Sts Out] = dos(cmd);      % excecute program
+    cmd   	= [ FipaExe.focxhL ' ' pthVec ' ' bbxf ' ' pthHst];
+    [sts Out] = dos(cmd);      % excecute program
 
     fprintf('.');
     

@@ -7,16 +7,15 @@
 % CURRENT    plcMtcZon.m
 %
 clear;
+run('../globalsSB');
 
-progMvec1   = '..\MtchVec\mvec1';
 dirImg      = 'Imgs/';
-dirDsc      = 'Desc\';          % windows backslash
-dirFoc      = 'Focii\';
+dirDsc      = 'Desc/';          
+dirFoc      = 'Focii/';
 
-%% -----  Utility Scripts  -----
-addpath('../UtilMb/');
-addpath('../MtchVec/UtilMb/');
-addpath('../FocExtr/UtilMb/'); % LoadFocHist
+% change to window backslash
+%dirDsc      = u_PathToBackSlash( dirDsc ); 
+%dirFoc      = u_PathToBackSlash( dirFoc );
 
 %% -----  List of Images  -----
 aImg        = dir([dirImg '*.jpg']);
@@ -46,19 +45,17 @@ for c = 1:nComb
         % ==========   Vectors   ==========
         dsc1    = [dirFoc imna1 num2str(f) '.vef'];
         dsc2    = [dirFoc imna2 num2str(f) '.vef'];
-        cmd     = [progMvec1 ' ' dsc1 ' ' dsc2];
-        [Std OutMtc] = dos(cmd);
+        cmd     = [ FipaExe.mvec1 ' ' dsc1 ' ' dsc2];
+        [sts OutMtc] = dos(cmd);
         % OutMtc
         fprintf('.');
         
         % -----  Analyze Output  -----
-        [StoI HedI] = u_MtrMesHead(OutMtc);
-        [MesImg disImg] = u_MtrMvec(StoI, HedI);
-        Ndsc1I      = u_MtrMvecNdsc(StoI.Ndsc, HedI, '1');
-        Ndsc2I      = u_MtrMvecNdsc(StoI.Ndsc, HedI, '2');
-        MesI        = f_Mvv(MesImg, Ndsc1I, Ndsc2I, 'img');
-        DisMes(c,f) = MesI.Dnc.men;
-        SmlMes(c,f) = MesI.Sml.men;
+        [StoI HedI]      = u_MtrMesSecs( OutMtc );
+        [AMesDty mesTot] = u_MtrMesScnf( StoI );  
+        
+        DisMes(c,f) = mesTot.dis;
+        SmlMes(c,f) = mesTot.sim;
 
         % ==========   Histograms   ==========
         hsf1        = [dirFoc imna1 num2str(f) '.hsf1'];

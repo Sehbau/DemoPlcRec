@@ -10,17 +10,16 @@
 % Images 1 and 5 are the most dissimilar (0 and 6, resp)
 %
 clear;
+run('../globalsSB');
 
-progMvec1   = '..\MtchVec\mvec1';
 dirImg      = 'Imgs/';
-dirDsc      = 'Desc\';              % windows backslash
+dirDsc      = 'Desc/';              
 
-addpath('../UtilMb/');
-addpath('../MtchVec/UtilMb/');
-addpath('../DescExtr/UtilMb/Hist/');
+% change to window backslash
+%dirDsc      = u_PathToBackSlash( dirDsc );
 
 %% -----  List of Images  -----
-aImg    = dir([dirImg '*.jpg']);
+aImg    = dir( [dirImg '*.jpg'] );
 nImg    = length(aImg);
 
 %% ==========   Vec Matching (whole image)   ==========
@@ -32,29 +31,27 @@ Comb(4,:) = [1 5];          % least similar (0,6)
 Comb(5,:) = [2 5];          
 nComb     = size(Comb,1);   % number of combinations
 
-[Dis Sml] = deal(zeros(1, nComb));   % distances/similarities
+[Dis Sim] = deal(zeros(1, nComb));   % distances/similarities
 DisHst = zeros(1, nComb);
 for c = 1:nComb
     
     % ==========   Vectors   ==========
     % the image pair
     per     = Comb(c,:);
-    dsc1    = [dirDsc aImg(per(1)).name(1:end-4) '.vec'];
-    dsc2    = [dirDsc aImg(per(2)).name(1:end-4) '.vec'];
+    pthDsc1 = [dirDsc aImg(per(1)).name(1:end-4) '.vec'];
+    pthDsc2 = [dirDsc aImg(per(2)).name(1:end-4) '.vec'];
     
-    cmd     = [progMvec1 ' ' dsc1 ' ' dsc2];
-    [Std OutMtc] = dos(cmd);    % excecute program
+    cmnd    = [ FipaExe.mvec1 ' ' pthDsc1 ' ' pthDsc2];
+    [Std OutMtc] = dos(cmnd);    % excecute program
     % OutMtc
     fprintf('.');
     
     % -----  Analyze Output  -----
-    [StoI HedI] = u_MtrMesHead(OutMtc);
-    [MesImg disImg] = u_MtrMvec(StoI, HedI);
-    Ndsc1I      = u_MtrMvecNdsc(StoI.Ndsc, HedI, '1');
-    Ndsc2I      = u_MtrMvecNdsc(StoI.Ndsc, HedI, '2');
-    MesI        = f_Mvv(MesImg, Ndsc1I, Ndsc2I, 'img');
-    Dis(c)      = MesI.Dnc.men;
-    Sml(c)      = MesI.Sml.men;
+    [StoI HedI]      = u_MtrMesSecs( OutMtc );
+    [AMesDty mesTot] = u_MtrMesScnf( StoI );
+
+    Dis(c)      = mesTot.dis;
+    Sim(c)      = mesTot.sim;
     
     % ==========   Histograms   ==========
     hsf1    = [dirDsc aImg(per(1)).name(1:end-4) '.hst'];
@@ -75,7 +72,7 @@ set(gca, 'xticklabel', xLab);
 title('distance vect');
 
 subplot(nr,nc,2);
-bar(Sml);
+bar(Sim);
 set(gca, 'xticklabel', xLab);
 title('similarity vect');
 

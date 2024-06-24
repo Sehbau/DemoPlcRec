@@ -9,14 +9,13 @@
 clear;
 
 dirImg      = 'Imgs/';
-dirFoc      = 'Focii\';
+dirFoc      = 'Focii/';
+
+dirFoc      = u_PathToBackSlash( dirFoc ); 
 
 %% -----  List of Images  -----
-aImg    = dir([dirImg '*.jpg']);
-nImg    = length(aImg);
-
-%% -----  Paths  -----
-addpath('../FocExtr/UtilMb/'); % LoadFocHistArr
+aImg        = dir([dirImg '*.jpg']);
+nImg        = length(aImg);
 
 %% ==========   Zone Matching   ==========
 % the combinations:
@@ -44,6 +43,7 @@ for c = 1:nComb
     end
     
 end
+
 %% -----   Combine Measures   -----
 DisSumHst = sum(DisHst,2);
 
